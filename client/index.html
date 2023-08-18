@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- Web App Config -->
+    <title>局域网文件传送带 | 智网云科</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#3367d6">
+    <meta name="color-scheme" content="dark light">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="apple-mobile-web-app-title" content="Snapdrop">
+    <!-- Descriptions -->
+    <meta name="author" content="Daishenghui">
+    <meta property="og:title" content="局域网文件传送带">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://daishenghui.club">
+    <!-- Icons -->
+    <link rel="icon" sizes="96x96" href="images/favicon-96x96.png">
+    <link rel="shortcut icon" href="images/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <meta name="msapplication-TileImage" content="images/mstile-150x150.png">
+    <link rel="fluid-icon" type="image/png" href="images/android-chrome-192x192.png">
+    <!-- Resources -->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body translate="no">
+    <header class="row-reverse">
+        <a href="#about" class="icon-button" title="关于作者">
+            <svg class="icon">
+                <use xlink:href="#info-outline" />
+            </svg>
+        </a>
+        <a href="#" id="theme" class="icon-button" title="切换黑暗/高亮模式" >
+            <svg class="icon">
+                <use xlink:href="#icon-theme" />
+            </svg>
+        </a>
+        <!-- <a href="#" id="install" class="icon-button" title="Install Transfer" hidden> --!>
+             <a href="#" id="install" class="icon-button" title="安装插件">
+            <svg class="icon">
+                <use xlink:href="#homescreen"></use>
+            </svg>
+        </a>
+    </header>
+    <!-- Peers -->
+    <x-peers class="center"></x-peers>
+    <x-no-peers>
+        <h2>请在局域网的另一台设备上打开这个页面来传输文件</h2>
+    </x-no-peers>
+    <x-instructions desktop="点击发送文件或右键发送消息" mobile="点击发送文件或长按发送消息"></x-instructions>
+    <!-- Footer -->
+    <footer class="column">
+        <svg class="icon logo">
+            <use xlink:href="#wifi-tethering" />
+        </svg>
+        <div id="displayName" placeholder="跨设备传输文件的最简单方法"></div>
+        <div class="font-body2">跟您在同一个网络内的人都可以发现您</div>
+        <br>
+        </br>
+        <div class="copyright">由 <a href="https://www.cucloud.cn/">中国联通</a>赞助云服务器</div>
+        <div class="copyright">由 <a href="https://daishenghui.club">戴戴的Linux</a> | 福建省智网云科 | 福建省数网云提供技术支持</div>
+    </footer>
+    <!-- Receive Dialog -->
+    <x-dialog id="receiveDialog">
+        <x-background class="full center">
+            <x-paper shadow="2">
+                <h3>文件接收</h3>
+                <div class="font-subheading" id="fileName">文件名</div>
+                <div class="font-body2" id="fileSize"></div>
+                <div class='preview' style="visibility: hidden;">
+                    <img id='img-preview' src="">
+                </div>
+                <div class="row">
+                    <label for="autoDownload" class="grow">下载前询问是否保存每个文件</label>
+                    <input type="checkbox" id="autoDownload" checked="">
+                </div>
+                <div class="row-reverse">
+                    <a class="button" close id="download" title="Download File" autofocus>保存</a>
+                    <button class="button" close>忽略</button>
+                </div>
+            </x-paper>
+        </x-background>
+    </x-dialog>
+    <!-- Send Text Dialog -->
+    <x-dialog id="sendTextDialog">
+        <form action="#">
+            <x-background class="full center">
+                <x-paper shadow="2">
+                    <h3>发送消息</h3>
+                    <div id="textInput" class="textarea" role="textbox" placeholder="发送消息" autocomplete="off" autofocus contenteditable></div>
+                    <div class="row-reverse">
+                        <button class="button" type="submit" close>发送</button>
+                        <a class="button" close>取消</a>
+                    </div>
+                </x-paper>
+            </x-background>
+        </form>
+    </x-dialog>
+    <!-- Receive Text Dialog -->
+    <x-dialog id="receiveTextDialog">
+        <x-background class="full center">
+            <x-paper shadow="2">
+                <h3>消息接收</h3>
+                <div class="font-subheading" id="text"></div>
+                <div class="row-reverse">
+                    <button class="button" id="copy" close autofocus>复制</button>
+                    <button class="button" close>关闭</button>
+                </div>
+            </x-paper>
+        </x-background>
+    </x-dialog>
+    <!-- Toast -->
+    <div class="toast-container full center">
+        <x-toast class="row" shadow="1" id="toast">文件传送完成！</x-toast>
+    </div>
+    <!-- About Page -->
+    <x-about id="about" class="full center column">
+        <section class="center column fade-in">
+            <header class="row-reverse">
+                <a href="#" class="close icon-button">
+                    <svg class="icon">
+                        <use xlink:href="#close" />
+                    </svg>
+                </a>
+            </header>
+            <svg class="icon logo">
+                <use xlink:href="#wifi-tethering" />
+            </svg>
+            <h1>文件传送带</h1>
+            <div class="font-subheading">跨设备传输文件的最简单方法</div>
+            <div class="row">
+                <a class="icon-button" target="_blank" href="https://daishenghui.club" title="博客" rel="noreferrer">
+                    <svg class="icon">
+                        <use xlink:href="#github" />
+                    </svg>
+                </a>
+                <a class="icon-button" target="_blank" href="https://paypal.me/stephenjosedai?country.x=C2&locale.x=zh_XC" title="赞助我吧！" rel="noreferrer">
+                    <svg class="icon">
+                        <use xlink:href="#monetarization" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+        <x-background></x-background>
+    </x-about>
+    <!-- SVG Icon Library -->
+    <svg style="display: none;">
+        <symbol id=wifi-tethering viewBox="0 0 24 24">
+            <path d="M 13.00,12.00
+           C 13.00,11.45 12.55,11.00 12.00,11.00
+             11.45,11.00 11.00,11.45 11.00,12.00
+             11.00,12.00 13.00,12.00 13.00,12.00 Z
+           M 11.00,12.01
+           C 11.00,12.56 11.45,13.01 12.00,13.01
+             12.55,13.01 13.00,12.56 13.00,12.01
+             13.00,12.01 11.00,12.01 11.00,12.01 Z
+           M 11.00,12.00
+           C 11.00,12.00 11.00,12.01 11.00,12.01
+             11.00,12.01 13.00,12.01 13.00,12.01
+             13.00,12.01 13.00,12.00 13.00,12.00
+             13.00,12.00 11.00,12.00 11.00,12.00
+             11.00,12.00 11.00,12.00 11.00,12.00 Z
+           M 15.54,8.46
+           C 15.36,8.29 15.11,8.18 14.84,8.18
+             14.29,8.18 13.84,8.63 13.84,9.18
+             13.84,9.45 13.95,9.70 14.12,9.88
+             14.12,9.88 15.54,8.46 15.54,8.46 Z
+           M 14.12,14.12
+           C 13.95,14.30 13.84,14.55 13.84,14.82
+             13.84,15.37 14.29,15.82 14.84,15.82
+             15.11,15.82 15.36,15.71 15.54,15.53
+             15.54,15.53 14.12,14.12 14.12,14.12 Z
+           M 14.12,9.88
+           C 14.66,10.42 15.00,11.17 15.00,12.00
+             15.00,12.00 15.00,12.00 15.00,12.00
+             15.00,12.00 17.00,12.00 17.00,12.00
+             17.00,10.62 16.44,9.37 15.54,8.47
+             15.54,8.47 14.12,9.88 14.12,9.88
+             14.12,9.88 14.12,9.88 14.12,9.88 Z
+           M 15.00,12.00
+           C 15.00,12.00 15.00,12.00 15.00,12.00
+             15.00,12.83 14.66,13.58 14.12,14.12
+             14.12,14.12 15.54,15.54 15.54,15.54
+             16.44,14.63 17.00,13.38 17.00,12.00
+             17.00,12.00 15.00,12.00 15.00,12.00
+             15.00,12.00 15.00,12.00 15.00,12.00 Z
+           M 18.36,5.64
+           C 18.18,5.46 17.94,5.36 17.67,5.36
+             17.12,5.36 16.67,5.80 16.67,6.36
+             16.67,6.63 16.78,6.87 16.95,7.05
+             16.95,7.05 18.36,5.64 18.36,5.64
+             18.36,5.64 18.36,5.64 18.36,5.64 Z
+           M 20.00,12.00 20.00,12.00 20.00,12.00 20.00,12.00
+           M 16.95,16.95
+           C 16.76,17.13 16.64,17.39 16.64,17.67
+             16.64,18.22 17.09,18.67 17.64,18.67
+             17.93,18.67 18.18,18.55 18.36,18.36
+             18.36,18.36 16.95,16.95 16.95,16.95 Z
+           M 16.95,7.05
+           C 17.59,7.69 18.11,8.46 18.47,9.32
+             18.47,9.32 20.31,8.56 20.31,8.56
+             19.86,7.46 19.19,6.47 18.36,5.64
+             18.36,5.64 16.95,7.05 16.95,7.05
+             16.95,7.05 16.95,7.05 16.95,7.05 Z
+           M 18.47,9.32
+           C 18.81,10.14 19.00,11.05 19.00,12.00
+             19.00,12.00 21.00,12.00 21.00,12.00
+             21.00,12.00 21.00,12.00 21.00,12.00
+             21.00,10.78 20.76,9.62 20.32,8.56
+             20.32,8.56 18.47,9.32 18.47,9.32
+             18.47,9.32 18.47,9.32 18.47,9.32 Z
+           M 19.00,12.00
+           C 19.00,12.95 18.81,13.85 18.47,14.68
+             18.47,14.68 20.31,15.44 20.31,15.44
+             20.76,14.39 21.00,13.22 21.00,12.00
+             21.00,12.00 21.00,12.00 21.00,12.00
+             21.00,12.00 19.00,12.00 19.00,12.00
+             19.00,12.00 19.00,12.00 19.00,12.00 Z
+           M 18.47,14.68
+           C 18.11,15.53 17.59,16.30 16.95,16.95
+             16.95,16.95 18.36,18.36 18.36,18.36
+             19.19,17.54 19.86,16.55 20.31,15.45
+             20.31,15.45 18.47,14.68 18.47,14.68 Z
+           M 8.46,15.54
+           C 8.64,15.72 8.89,15.83 9.17,15.83
+             9.72,15.83 10.17,15.38 10.17,14.83
+             10.17,14.55 10.06,14.30 9.87,14.12
+             9.87,14.12 8.46,15.54 8.46,15.54
+             8.46,15.54 8.46,15.54 8.46,15.54 Z
+           M 8.00,12.00 8.00,12.00 8.00,12.00 8.00,12.00
+           M 9.88,9.88
+           C 10.05,9.70 10.16,9.45 10.16,9.18
+             10.16,8.63 9.71,8.18 9.16,8.18
+             8.89,8.18 8.64,8.29 8.46,8.47
+             8.46,8.47 9.88,9.88 9.88,9.88 Z
+           M 9.88,14.12
+           C 9.33,13.58 9.00,12.83 9.00,12.00
+             9.00,12.00 7.00,12.00 7.00,12.00
+             7.00,13.38 7.56,14.63 8.46,15.53
+             8.46,15.53 9.87,14.12 9.87,14.12
+             9.87,14.12 9.88,14.12 9.88,14.12 Z
+           M 9.00,12.00
+           C 9.00,12.00 9.00,12.00 9.00,12.00
+             9.00,11.17 9.33,10.42 9.88,9.88
+             9.88,9.88 8.46,8.46 8.46,8.46
+             7.56,9.37 7.00,10.62 7.00,12.00
+             7.00,12.00 9.00,12.00 9.00,12.00
+             9.00,12.00 9.00,12.00 9.00,12.00 Z
+           M 5.63,18.36
+           C 5.81,18.54 6.05,18.64 6.32,18.64
+             6.88,18.64 7.32,18.20 7.32,17.64
+             7.32,17.37 7.22,17.13 7.04,16.95
+             7.04,16.95 5.63,18.36 5.63,18.36 Z
+           M 3.99,12.00 3.99,12.00 3.99,12.00 3.99,12.00
+           M 7.04,7.05
+           C 7.22,6.87 7.32,6.63 7.32,6.36
+             7.32,5.80 6.88,5.36 6.32,5.36
+             6.05,5.36 5.81,5.46 5.63,5.64
+             5.63,5.64 7.04,7.05 7.04,7.05
+             7.04,7.05 7.04,7.05 7.04,7.05 Z
+           M 7.04,16.95
+           C 6.40,16.31 5.88,15.54 5.53,14.68
+             5.53,14.68 3.68,15.44 3.68,15.44
+             4.13,16.54 4.80,17.53 5.63,18.36
+             5.63,18.36 7.04,16.95 7.04,16.95
+             7.04,16.95 7.04,16.95 7.04,16.95 Z
+           M 5.53,14.68
+           C 5.18,13.86 4.99,12.95 4.99,12.00
+             4.99,12.00 2.99,12.00 2.99,12.00
+             2.99,12.00 2.99,12.00 2.99,12.00
+             2.99,13.22 3.24,14.38 3.68,15.44
+             3.68,15.44 5.53,14.68 5.53,14.68
+             5.53,14.68 5.53,14.68 5.53,14.68 Z
+           M 4.99,12.00
+           C 4.99,11.05 5.18,10.15 5.53,9.32
+             5.53,9.32 3.68,8.56 3.68,8.56
+             3.24,9.61 2.99,10.78 2.99,12.00
+             2.99,12.00 2.99,12.00 2.99,12.00
+             2.99,12.00 4.99,12.00 4.99,12.00 Z
+           M 5.53,9.32
+           C 5.88,8.47 6.40,7.70 7.04,7.05
+             7.04,7.05 5.63,5.64 5.63,5.64
+             4.80,6.46 4.14,7.45 3.68,8.55
+             3.68,8.55 5.53,9.32 5.53,9.32
+             5.53,9.32 5.53,9.32 5.53,9.32 Z"></path>
+        </symbol>
+        <symbol id=desktop-mac viewBox="0 0 24 24">
+            <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z"></path>
+        </symbol>
+        <symbol id=phone-iphone viewBox="0 0 24 24">
+            <path d="M15.5 1h-8C6.12 1 5 2.12 5 3.5v17C5 21.88 6.12 23 7.5 23h8c1.38 0 2.5-1.12 2.5-2.5v-17C18 2.12 16.88 1 15.5 1zm-4 21c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4.5-4H7V4h9v14z"></path>
+        </symbol>
+        <symbol id=tablet-mac viewBox="0 0 24 24">
+            <path d="M18.5 0h-14C3.12 0 2 1.12 2 2.5v19C2 22.88 3.12 24 4.5 24h14c1.38 0 2.5-1.12 2.5-2.5v-19C21 1.12 19.88 0 18.5 0zm-7 23c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm7.5-4H4V3h15v16z"></path>
+        </symbol>
+        <symbol id=info-outline viewBox="0 0 24 24">
+            <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"></path>
+        </symbol>
+        <symbol id=close viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+        </symbol>
+        <symbol id="github">
+            <path d="M 23.14,6.86
+           C 23.14,6.86 20.57,6.86 20.57,6.86
+             20.57,6.86 20.57,2.57 20.57,2.57
+             20.57,2.10 20.19,1.71 19.71,1.71
+             19.71,1.71 0.86,1.71 0.86,1.71
+             0.38,1.71 0.00,2.10 0.00,2.57
+             0.00,2.57 0.00,21.43 0.00,21.43
+             0.00,21.90 0.38,22.29 0.86,22.29
+             0.86,22.29 23.14,22.29 23.14,22.29
+             23.62,22.29 24.00,21.90 24.00,21.43
+             24.00,21.43 24.00,7.71 24.00,7.71
+             24.00,7.24 23.62,6.86 23.14,6.86 Z
+           M 18.86,20.57
+           C 18.86,20.57 1.71,20.57 1.71,20.57
+             1.71,20.57 1.71,3.43 1.71,3.43
+             1.71,3.43 18.86,3.43 18.86,3.43
+             18.86,3.43 18.86,20.57 18.86,20.57 Z
+           M 22.29,20.57
+           C 22.29,20.57 20.57,20.57 20.57,20.57
+             20.57,20.57 20.57,8.57 20.57,8.57
+             20.57,8.57 22.29,8.57 22.29,8.57
+             22.29,8.57 22.29,20.57 22.29,20.57 Z
+           M 10.29,16.29
+           C 10.29,16.29 17.14,16.29 17.14,16.29
+             17.14,16.29 17.14,17.14 17.14,17.14
+             17.14,17.14 10.29,17.14 10.29,17.14
+             10.29,17.14 10.29,16.29 10.29,16.29
+             10.29,16.29 10.29,16.29 10.29,16.29 Z
+           M 10.29,13.71
+           C 10.29,13.71 17.14,13.71 17.14,13.71
+             17.14,13.71 17.14,14.57 17.14,14.57
+             17.14,14.57 10.29,14.57 10.29,14.57
+             10.29,14.57 10.29,13.71 10.29,13.71
+             10.29,13.71 10.29,13.71 10.29,13.71 Z
+           M 10.29,11.14
+           C 10.29,11.14 17.14,11.14 17.14,11.14
+             17.14,11.14 17.14,12.00 17.14,12.00
+             17.14,12.00 10.29,12.00 10.29,12.00
+             10.29,12.00 10.29,11.14 10.29,11.14
+             10.29,11.14 10.29,11.14 10.29,11.14 Z
+           M 3.43,11.14
+           C 3.43,11.14 8.57,11.14 8.57,11.14
+             8.57,11.14 8.57,17.14 8.57,17.14
+             8.57,17.14 3.43,17.14 3.43,17.14
+             3.43,17.14 3.43,11.14 3.43,11.14
+             3.43,11.14 3.43,11.14 3.43,11.14 Z
+           M 3.43,6.86
+           C 3.43,6.86 17.14,6.86 17.14,6.86
+             17.14,6.86 17.14,8.57 17.14,8.57
+             17.14,8.57 3.43,8.57 3.43,8.57
+             3.43,8.57 3.43,6.86 3.43,6.86 Z" /></path>
+        </symbol>
+        <symbol id="homescreen">
+            <path fill="none" d="M0 0h24v24H0V0z"></path>
+            <path d="M18 1.01L8 1c-1.1 0-2 .9-2 2v3h2V5h10v14H8v-1H6v3c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM10 15h2V8H5v2h3.59L3 15.59 4.41 17 10 11.41z"></path>
+            <path fill="none" d="M0 0h24v24H0V0z"></path>
+        </symbol>
+        <symbol id="monetarization">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z" />
+        </symbol>
+        <symbol id="icon-theme" viewBox="0 0 24 24">
+         <rect fill="none" height="24" width="24"/><path d="M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98,1.37-2.58,2.26-4.4,2.26 c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"/>
+        </symbol>
+    </svg>
+    <!-- Scripts -->
+    <script src="scripts/network.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/theme.js" async></script>
+    <script src="scripts/clipboard.js" async></script>
+    <!-- Sounds -->
+    <audio id="blop" autobuffer="true">
+        <source src="sounds/blop.mp3" type="audio/mpeg">
+        <source src="sounds/blop.ogg" type="audio/ogg">
+    </audio>
+    <!-- no script -->
+    <noscript>
+        <x-noscript class="full center column">
+            <h1>Enable JavaScript</h1>
+            <h3>Snapdrop works only with JavaScript</h3>
+        </x-noscript>
+        <style>
+        x-noscript {
+            background: #599cfc;
+            color: white;
+            z-index: 2;
+        }
+
+        a[href="#info"] {
+            color: white;
+        }
+        </style>
+    </noscript>
+</body>
