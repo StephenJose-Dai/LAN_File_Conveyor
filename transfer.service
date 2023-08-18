@@ -1,0 +1,13 @@
+[Unit]
+Description=https://daishenghui.club
+After=network.target
+
+[Service]
+ExecStart=/usr/local/node/bin/node /www/LAN_File_Conveyor/server/index.js
+WorkingDirectory=/www/LAN_File_Conveyor/server/
+Restart=always
+User=root
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
